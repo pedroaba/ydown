@@ -1,20 +1,38 @@
 {
+  "schemaVersion": 3,
+  "mode": "local-build",
   "version": "9.0.2",
   "platform": "aarch64-apple-darwin",
+  "localBuild": {
+    "binDirectory": "ffmpeg-builds/ffmpeg-9.0.2-macos-arm64/install/bin",
+    "ffmpeg": {
+      "repository": "https://git.ffmpeg.org/ffmpeg.git",
+      "tag": "n9.0.2",
+      "commit": "946fcce07b6dcd0331c8cc609192aeff5e1924f8",
+      "sourceDirectory": "ffmpeg"
+    },
+    "x264": {
+      "repository": "https://code.videolan.org/videolan/x264.git",
+      "commit": "0480cb05fa188d37ae87e8f4fd8f1aea3711f7ee",
+      "sourceDirectory": "x264"
+    },
+    "deploymentTarget": "12.0",
+    "buildScript": "ffmpeg-builds/build-local-arm64.sh",
+    "validationScript": "ffmpeg-builds/validate-local-arm64.sh",
+    "baseDir": {
+      "env": "LOCAL_MEDIA_BASE_DIR"
+    }
+  },
   "files": [
     {
       "name": "ffmpeg",
-      "url": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffmpeg.zip",
-      "archiveSha256": "c8ed4c4e6978a03c485edbfe4e0a5dc2380f8a30bba5150531b31b094492d924",
-      "binarySha256": "2e11c6f90993cdb79fff84d3f90044d28316b310e75b3e030cfc9a54f2c9d384",
-      "bytes": 66332880
+      "binarySha256": "49ec37c543d63ee6ab580df36cca13523dc6d89da991059b11e948cde436f0f5",
+      "bytes": 23883992
     },
     {
       "name": "ffprobe",
-      "url": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffprobe.zip",
-      "archiveSha256": "fcbe839537485eaee7a7a8bc5cbc0f90d53617e80943e8a5b2e31cb851197ea6",
-      "binarySha256": "2738aa46a7f9acbc8ab09a6715554c90f7de603171ac403726765685df6a0059",
-      "bytes": 66158064
+      "binarySha256": "34ea5fa2ea3cf55bf65522d4a9a345655d9c599db3c6a5e3ae0157bc3d8df4b0",
+      "bytes": 23708904
     }
   ]
 }

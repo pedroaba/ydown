@@ -8,7 +8,9 @@
     "build": "vite build",
     "dev:ui": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "bundle": "tauri build",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "predev": "python3 ../../scripts/fetch-media-tools.py",
+    "prebundle": "python3 ../../scripts/fetch-media-tools.py"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.4",

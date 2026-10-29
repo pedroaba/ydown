@@ -34,3 +34,17 @@ Os testes TypeScript cobrem busca, favoritos, playlists, persistência, reversã
 Cancelamento de um download longo, recuperação após encerramento abrupto, leitor de tela e todos os formatos/vídeos possíveis não foram exercitados manualmente. Windows, Linux, Mac Intel e o aplicativo mobile nativo não foram executados nesta etapa. O sucesso dos vídeos usados nos testes não garante compatibilidade com todos os vídeos do YouTube.
 
 O mobile foi preservado. A checagem TypeScript compartilhada passou, mas a aquisição por link e os executáveis de desktop não foram portados para Android/iOS. O `.app` local não foi preparado como distribuição assinada/notarizada.
+
+## Preparação por build local — 29/10/2026
+
+O manifesto foi alterado para `schemaVersion: 2`, `mode: local-build`, usando os executáveis compilados do FFmpeg oficial `n9.0.2` no SSD externo. As URLs e hashes de arquivos ZIP do fornecedor anterior foram removidos. Os SHA-256 e tamanhos agora correspondem ao build local com libx264.
+
+O script de preparação valida ambas as origens necessárias antes de substituir arquivos, verifica as cópias temporárias e ajusta a permissão de execução. Quatro testes Python passaram: cópia e reutilização sem SSD, rejeição de origem alterada sem sobrescrever as cópias existentes, falha quando a origem está ausente e uso de outro diretório mantendo os hashes fixos.
+
+A preparação real substituiu os executáveis do projeto; uma segunda execução os reconheceu como válidos. O build desktop executa essa preparação automaticamente via `predev`/`prebundle`. A documentação e os avisos de licença foram ajustados ao build GPL v2 ou posterior. Mobile não foi alterado.
+
+## BaseDir configurável por ambiente — 29/10/2026
+
+O manifesto passou a usar `schemaVersion: 3`, `localBuild.baseDir.env: LOCAL_MEDIA_BASE_DIR` e caminhos relativos. O diretório-base é configurado no ambiente ou em `.env.local` ignorado pelo Git, com precedência para o ambiente. `.env.example` documenta a variável sem fixar a máquina. A preparação continua funcionando sem a variável quando os binários copiados já são válidos.
+
+Oito testes Python cobrem cópia/verificação, integridade, arquivos ausentes, override direto, `.env.local` com caminho entre aspas, precedência do ambiente, erro sem configuração e bloqueio de caminhos fora do baseDir.

@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "desktop:build": "npm run bundle -w @ydown/desktop",
-    "desktop:preview": "npm run dev:ui -w @ydown/desktop"
+    "desktop:preview": "npm run dev:ui -w @ydown/desktop",
+    "media:prepare": "python3 scripts/fetch-media-tools.py"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -39,7 +39,7 @@
       "binaries/macos-arm64/ffprobe",
       "binaries/manifest.json",
       "binaries/FFMPEG-LICENSE.txt",
-      "binaries/GPL-3.0.txt"
+      "binaries/GPL-2.0.txt"
     ]
   }
 }

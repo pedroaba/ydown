@@ -40,21 +40,40 @@ O download acontece no backend Rust usando `rusty_ytdl`. FFmpeg converte os arqu
 - macOS Apple Silicon para o desktop desta versão.
 - Node.js **22.12+** e npm **11+**.
 - Rust estável e Xcode Command Line Tools, conforme os [pré-requisitos do Tauri](https://v2.tauri.app/start/prerequisites/).
-- Python 3 e `curl` apenas para preparar os binários durante o desenvolvimento.
+- Python 3 para verificar e copiar os binários do build local durante o desenvolvimento.
 
 ### Instalação
 
 ```sh
 git clone https://github.com/pedroaba/ydown.git
 cd ydown
+cp .env.example .env.local
+# Edite LOCAL_MEDIA_BASE_DIR em .env.local para apontar à pasta dos fontes/builds.
 npm ci
-python3 scripts/fetch-media-tools.py
+npm run media:prepare
 npm run desktop
 ```
 
 `npm run desktop` abre a janela nativa. O primeiro build baixa e compila as dependências Rust. O workspace usa npm e mantém `package-lock.json` e `Cargo.lock` versionados.
 
-Os executáveis de mídia **não são armazenados no histórico Git**. O script de preparação baixa versões fixas e verifica SHA-256 dos arquivos ZIP e dos executáveis usando o [manifesto](apps/desktop/src-tauri/binaries/manifest.json). Os binários ficam dentro do projeto local e são incorporados ao aplicativo no build; não há download de ferramentas durante a execução do `.app`.
+Os executáveis de mídia **não são armazenados no histórico Git**. Nesta etapa, o [manifesto](apps/desktop/src-tauri/binaries/manifest.json) usa o modo `local-build`: o script verifica e copia FFmpeg/FFprobe compilados a partir do código oficial. Os caminhos de fontes, scripts e binários no manifesto são relativos ao `baseDir`, obtido pela variável `LOCAL_MEDIA_BASE_DIR`. Não há download pela rede nem fallback para fornecedores externos.
+
+Configure a pasta que contém `ffmpeg/`, `x264/` e `ffmpeg-builds/` em `.env.local` (ignorado pelo Git) ou exporte a variável no terminal. A variável do ambiente tem precedência sobre `.env.local`. Exemplo nesta máquina:
+
+```sh
+export LOCAL_MEDIA_BASE_DIR="/Volumes/SSDSamsung/www"
+npm run media:prepare
+```
+
+Em outra máquina, altere somente esse valor. O diretório dos executáveis é resolvido como `$LOCAL_MEDIA_BASE_DIR/ffmpeg-builds/ffmpeg-9.0.2-macos-arm64/install/bin`; não existe caminho absoluto nem fallback de máquina no manifesto.
+
+O SSD é necessário para preparar ou substituir uma cópia ausente/inválida. Quando os executáveis do projeto já correspondem aos hashes fixos, a preparação funciona sem o SSD. `npm run desktop` e o comando de bundle fazem essa verificação automaticamente. Para usar outro diretório com os mesmos binários:
+
+```sh
+python3 scripts/fetch-media-tools.py --source-dir /caminho/do/build/install/bin
+```
+
+O script valida tamanho e SHA-256 dos arquivos de origem antes de substituir qualquer executável. Se a origem estiver ausente ou diferente do manifesto, ele encerra com erro. Os binários copiados são incorporados ao aplicativo; o `.app` pronto não depende do SSD.
 
 ### Comandos
 
@@ -70,13 +89,15 @@ Os executáveis de mídia **não são armazenados no histórico Git**. O script 
 ## Gerar o aplicativo macOS
 
 ```sh
-python3 scripts/fetch-media-tools.py
+npm run media:prepare
 npm run bundle -w @ydown/desktop -- --bundles app
 ```
 
 Saída: `apps/desktop/src-tauri/target/release/bundle/macos/LOCAL.app`.
 
-O pacote contém FFmpeg e FFprobe **9.0.2**, para `aarch64-apple-darwin`. Os executáveis vêm do [provedor Martin Riedl](https://ffmpeg.martin-riedl.de/) e usam apenas bibliotecas do sistema macOS. A origem, os hashes e os avisos de terceiros estão em [binaries/](apps/desktop/src-tauri/binaries/README.md).
+O pacote contém FFmpeg e FFprobe **9.0.2**, para `aarch64-apple-darwin`, compilados localmente do [repositório oficial FFmpeg](https://git.ffmpeg.org/ffmpeg.git), tag `n9.0.2`, com x264 compilado do repositório oficial da VideoLAN. Os fontes, scripts e arquivos de compilação ficam no SSD externo. Os executáveis usam apenas bibliotecas dinâmicas do sistema macOS; a origem, os hashes e a licença GPL v2 ou posterior deste build estão em [binaries/](apps/desktop/src-tauri/binaries/README.md).
+
+O build local cobre o processamento H.264/AAC usado pelo aplicativo. Ele não reproduz todos os codecs externos opcionais do pacote de terceiros anterior. A hospedagem dos executáveis para distribuição pública ficará para uma etapa posterior, com revisão de procedência, integridade e assinatura.
 
 Assinatura e notarização para distribuição pública não estão configuradas. Este repositório publica o código-fonte e os scripts de preparação; não fornece instaladores nem executáveis de terceiros no histórico Git. Antes de distribuir instaladores, revise as licenças dos componentes incluídos. Windows, Linux e Mac Intel exigem binários próprios e configuração de plataforma adicional.
 
@@ -128,6 +149,7 @@ Jobs incompletos são marcados como interrompidos ao reiniciar e podem ser tenta
 ```sh
 npm run check
 npm run format:check
+python3 -m unittest discover -s tests -p 'test_media_tools.py'
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml --lib
 cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check
 ```
