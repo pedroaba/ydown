@@ -7,6 +7,6 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@ydown/core": "*"
+    "@ydown/core": "workspace:*"
   }
 }

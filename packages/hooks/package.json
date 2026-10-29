@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@ydown/core": "*",
-    "@ydown/state": "*",
-    "@ydown/contracts": "*"
+    "@ydown/core": "workspace:*",
+    "@ydown/state": "workspace:*",
+    "@ydown/contracts": "workspace:*"
   },
   "peerDependencies": {
     "react": "19.3.0"

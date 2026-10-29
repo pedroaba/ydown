@@ -2,21 +2,17 @@
   "name": "ydown",
   "private": true,
   "version": "0.1.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "desktop": "npm run dev -w @ydown/desktop",
-    "mobile": "npm run start -w @ydown/mobile",
+    "desktop": "pnpm --filter @ydown/desktop run dev",
+    "mobile": "pnpm --filter @ydown/mobile run start",
     "typecheck": "tsc --noEmit",
-    "test": "npm run test:typescript && npm run test:media-tools",
-    "build": "npm run build -w @ydown/desktop",
-    "check": "npm run typecheck && npm test && npm run build",
+    "test": "pnpm run test:typescript && pnpm run test:media-tools",
+    "build": "pnpm --filter @ydown/desktop run build",
+    "check": "pnpm run typecheck && pnpm test && pnpm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "desktop:build": "npm run bundle -w @ydown/desktop",
-    "desktop:preview": "npm run dev:ui -w @ydown/desktop",
+    "desktop:build": "pnpm --filter @ydown/desktop run bundle",
+    "desktop:preview": "pnpm --filter @ydown/desktop run dev:ui",
     "media:prepare": "python3 scripts/fetch-media-tools.py",
     "test:typescript": "vitest run",
     "test:media-tools": "python3 -m unittest discover -s scripts/tests -p 'test_*.py'",
@@ -31,5 +27,10 @@
     "react-dom": "19.3.0",
     "typescript": "~5.9.3",
     "vitest": "^4.1.0"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": "11.25.0"
   }
 }

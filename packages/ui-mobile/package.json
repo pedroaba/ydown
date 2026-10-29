@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@ydown/core": "*",
-    "@ydown/design-tokens": "*",
-    "@ydown/utils": "*"
+    "@ydown/core": "workspace:*",
+    "@ydown/design-tokens": "workspace:*",
+    "@ydown/utils": "workspace:*"
   },
   "peerDependencies": {
     "react": "19.3.0",

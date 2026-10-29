@@ -7,8 +7,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@ydown/core": "*",
-    "@ydown/contracts": "*"
+    "@ydown/core": "workspace:*",
+    "@ydown/contracts": "workspace:*"
   },
   "scripts": {
     "test": "vitest run tests"

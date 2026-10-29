@@ -53,4 +53,14 @@ Oito testes Python cobrem cópia/verificação, integridade, arquivos ausentes, 
 
 A pasta `tests/` da raiz foi removida. Os testes TypeScript foram distribuídos entre `packages/core/tests`, `packages/state/tests` e `packages/utils/tests`. A verificação transversal de arquitetura fica em `scripts/architecture/tests`. Os testes Python da preparação ficam em `scripts/tests`, junto ao módulo de scripts. Os testes Rust continuam dentro dos próprios módulos.
 
-A cobertura anterior foi preservada: 19 testes TypeScript em cinco arquivos e oito testes Python. `npm test` executa ambas as suítes; comandos por pacote e por ferramenta permitem verificações isoladas. A resolução dos caminhos na verificação de arquitetura é relativa ao arquivo, sem depender do diretório de execução.
+A cobertura anterior foi preservada: 19 testes TypeScript em cinco arquivos e oito testes Python. `pnpm test` executa ambas as suítes; comandos por pacote e por ferramenta permitem verificações isoladas. A resolução dos caminhos na verificação de arquitetura é relativa ao arquivo, sem depender do diretório de execução.
+
+## Migração para pnpm Workspaces — 29/10/2026
+
+O monorepo passou a usar pnpm 11.25.0, fixado em `packageManager`, com `pnpm-workspace.yaml`, dependências internas `workspace:*` e `pnpm-lock.yaml` compartilhado. O lockfile foi importado do npm antes de remover `package-lock.json`. As árvores de `node_modules` geradas pelo npm foram removidas e a instalação limpa com `pnpm install --frozen-lockfile` passou.
+
+O linker é isolado. A referência aos tipos Vite foi movida da configuração global para `apps/desktop/src/vite-env.d.ts`, pois Vite é dependência do desktop. `enablePrePostScripts` preserva a preparação automática dos binários. O script opcional de instalação de `fsevents` está explicitamente desabilitado.
+
+Com pnpm, passaram typecheck, os 19 testes TypeScript, os oito testes Python, comandos de teste por pacote, formatação, build Vite e empacotamento Tauri release. O `prebundle` preparou os binários locais e o Tauri executou `pnpm run build` antes de gerar o `.app`. O Expo/Metro exportou o bundle web com a instalação isolada. Foi verificado que desktop, mobile, UI desktop, UI mobile e hooks resolvem a mesma instalação de React 19.3.0.
+
+`expo install --check` recomendou patches para Expo/Router/Dev Client/Constants/Linking e React Native. As versões desses pacotes são iguais às registradas no lockfile npm anterior à migração; não foram atualizadas nesta tarefa. Esse aviso de compatibilidade permanece registrado, embora a exportação web tenha passado. Execução nativa iOS/Android não foi realizada. Telas e adaptadores mobile não foram modificados.

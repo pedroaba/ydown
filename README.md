@@ -38,23 +38,25 @@ O download acontece no backend Rust usando `rusty_ytdl`. FFmpeg converte os arqu
 ### Pré-requisitos
 
 - macOS Apple Silicon para o desktop desta versão.
-- Node.js **22.12+** e npm **11+**.
+- Node.js **22.12+** e **pnpm 11.25.0** (versão fixada em `packageManager`).
 - Rust estável e Xcode Command Line Tools, conforme os [pré-requisitos do Tauri](https://v2.tauri.app/start/prerequisites/).
 - Python 3 para verificar e copiar os binários do build local durante o desenvolvimento.
 
 ### Instalação
+
+Use pnpm 11.25.0. Se ainda não estiver disponível, instale essa versão com `npm install --global pnpm@11.25.0` ou pelo seu gerenciador de ferramentas. Evite alternar a instalação do projeto entre npm, Yarn e pnpm.
 
 ```sh
 git clone https://github.com/pedroaba/ydown.git
 cd ydown
 cp .env.example .env.local
 # Edite LOCAL_MEDIA_BASE_DIR em .env.local para apontar à pasta dos fontes/builds.
-npm ci
-npm run media:prepare
-npm run desktop
+pnpm install --frozen-lockfile
+pnpm run media:prepare
+pnpm run desktop
 ```
 
-`npm run desktop` abre a janela nativa. O primeiro build baixa e compila as dependências Rust. O workspace usa npm e mantém `package-lock.json` e `Cargo.lock` versionados.
+`pnpm run desktop` abre a janela nativa. O primeiro build baixa e compila as dependências Rust. O monorepo usa pnpm Workspaces (`pnpm-workspace.yaml`), com `pnpm-lock.yaml` compartilhado para JavaScript/TypeScript e `Cargo.lock` para Rust. Dependências internas usam `workspace:*`.
 
 Os executáveis de mídia **não são armazenados no histórico Git**. Nesta etapa, o [manifesto](apps/desktop/src-tauri/binaries/manifest.json) usa o modo `local-build`: o script verifica e copia FFmpeg/FFprobe compilados a partir do código oficial. Os caminhos de fontes, scripts e binários no manifesto são relativos ao `baseDir`, obtido pela variável `LOCAL_MEDIA_BASE_DIR`. Não há download pela rede nem fallback para fornecedores externos.
 
@@ -62,12 +64,12 @@ Configure a pasta que contém `ffmpeg/`, `x264/` e `ffmpeg-builds/` em `.env.loc
 
 ```sh
 export LOCAL_MEDIA_BASE_DIR="/Volumes/SSDSamsung/www"
-npm run media:prepare
+pnpm run media:prepare
 ```
 
 Em outra máquina, altere somente esse valor. O diretório dos executáveis é resolvido como `$LOCAL_MEDIA_BASE_DIR/ffmpeg-builds/ffmpeg-9.0.2-macos-arm64/install/bin`; não existe caminho absoluto nem fallback de máquina no manifesto.
 
-O SSD é necessário para preparar ou substituir uma cópia ausente/inválida. Quando os executáveis do projeto já correspondem aos hashes fixos, a preparação funciona sem o SSD. `npm run desktop` e o comando de bundle fazem essa verificação automaticamente. Para usar outro diretório com os mesmos binários:
+O SSD é necessário para preparar ou substituir uma cópia ausente/inválida. Quando os executáveis do projeto já correspondem aos hashes fixos, a preparação funciona sem o SSD. `pnpm run desktop` e o comando de bundle fazem essa verificação automaticamente. Para usar outro diretório com os mesmos binários:
 
 ```sh
 python3 scripts/fetch-media-tools.py --source-dir /caminho/do/build/install/bin
@@ -75,22 +77,36 @@ python3 scripts/fetch-media-tools.py --source-dir /caminho/do/build/install/bin
 
 O script valida tamanho e SHA-256 dos arquivos de origem antes de substituir qualquer executável. Se a origem estiver ausente ou diferente do manifesto, ele encerra com erro. Os binários copiados são incorporados ao aplicativo; o `.app` pronto não depende do SSD.
 
+### Organização do workspace
+
+`pnpm-workspace.yaml` inclui `apps/*` e `packages/*`. A instalação usa dependências isoladas e um lockfile único. O mobile Expo é mantido no workspace sem mudanças nas telas ou adaptadores. Os hooks `predev` e `prebundle` continuam habilitados para preparar os binários locais antes de iniciar ou empacotar o desktop.
+
+Para adicionar dependências, escolha o pacote que as utiliza:
+
+```sh
+pnpm --filter @ydown/desktop add nome-da-dependencia
+pnpm --filter @ydown/core add -D nome-da-ferramenta
+pnpm add -Dw nome-da-ferramenta-da-raiz
+```
+
+Em CI ou numa instalação reproduzível, use `pnpm install --frozen-lockfile`. O script opcional de instalação de `fsevents` é desabilitado explicitamente; os watchers usam as APIs disponíveis do sistema. Não é necessário Turborepo para os comandos e a estrutura atuais.
+
 ### Comandos
 
-| Comando                   | Função                                                    |
-| ------------------------- | --------------------------------------------------------- |
-| `npm run desktop`         | Iniciar o aplicativo Tauri em desenvolvimento             |
-| `npm run desktop:preview` | Servir apenas a interface; download requer a janela Tauri |
-| `npm run check`           | TypeScript, testes e build da interface                   |
-| `npm run format:check`    | Conferir formatação                                       |
-| `npm run desktop:build`   | Gerar os bundles macOS configurados, `.app` e `.dmg`      |
-| `npm run mobile`          | Iniciar o aplicativo Expo existente                       |
+| Comando                    | Função                                                    |
+| -------------------------- | --------------------------------------------------------- |
+| `pnpm run desktop`         | Iniciar o aplicativo Tauri em desenvolvimento             |
+| `pnpm run desktop:preview` | Servir apenas a interface; download requer a janela Tauri |
+| `pnpm run check`           | TypeScript, testes e build da interface                   |
+| `pnpm run format:check`    | Conferir formatação                                       |
+| `pnpm run desktop:build`   | Gerar os bundles macOS configurados, `.app` e `.dmg`      |
+| `pnpm run mobile`          | Iniciar o aplicativo Expo existente                       |
 
 ## Gerar o aplicativo macOS
 
 ```sh
-npm run media:prepare
-npm run bundle -w @ydown/desktop -- --bundles app
+pnpm run media:prepare
+pnpm --filter @ydown/desktop run bundle --bundles app
 ```
 
 Saída: `apps/desktop/src-tauri/target/release/bundle/macos/LOCAL.app`.
@@ -151,9 +167,9 @@ Jobs incompletos são marcados como interrompidos ao reiniciar e podem ser tenta
 ## Verificação
 
 ```sh
-npm run check
-npm run format:check
-npm run test:media-tools
+pnpm run check
+pnpm run format:check
+pnpm run test:media-tools
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml --lib
 cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check
 ```
@@ -165,14 +181,14 @@ cargo run --manifest-path apps/desktop/src-tauri/Cargo.toml \
   --example youtube_probe -- 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
 ```
 
-`npm test` executa as suítes TypeScript e Python. Para testar apenas um módulo:
+`pnpm test` executa as suítes TypeScript e Python. Para testar apenas um módulo:
 
 ```sh
-npm test -w @ydown/core
-npm test -w @ydown/state
-npm test -w @ydown/utils
-npm run test:architecture
-npm run test:media-tools
+pnpm --filter @ydown/core test
+pnpm --filter @ydown/state test
+pnpm --filter @ydown/utils test
+pnpm run test:architecture
+pnpm run test:media-tools
 ```
 
 Os testes de domínio ficam em `packages/core/tests`, os de runtime e persistência em `packages/state/tests`, e os de formatação em `packages/utils/tests`. A verificação do grafo entre pacotes pertence ao módulo de arquitetura em `scripts/architecture/tests`; a preparação Python tem sua própria suíte em `scripts/tests`.

@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+nodeLinker: isolated
+sharedWorkspaceLockfile: true
+enablePrePostScripts: true
+
+# Optional macOS watcher; Vite/Metro can use the platform fs watcher.
+allowBuilds:
+  fsevents: false

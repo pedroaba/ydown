@@ -26,7 +26,7 @@ LOCAL_MEDIA_BASE_DIR="/Volumes/SSDSamsung/www"
 Também é possível exportar a variável no terminal; o ambiente tem precedência sobre `.env.local`. O script só lê a variável indicada, sem executar o conteúdo do arquivo nem expandir comandos shell.
 
 ```sh
-npm run media:prepare
+pnpm run media:prepare
 # ou, para usar outro diretório com os mesmos hashes:
 python3 scripts/fetch-media-tools.py --source-dir /caminho/do/build/install/bin
 ```
@@ -35,7 +35,7 @@ O script mantém `fetch-media-tools.py` como nome por compatibilidade, mas somen
 
 Os campos `binarySha256` e `bytes` fixam os artefatos aceitos. O script não recalcula a confiança de um binário diferente nem altera o manifesto automaticamente. Depois de uma recompilação intencional, valide os novos artefatos antes de atualizar os hashes. Hashes detectam diferenças de conteúdo; isoladamente, não comprovam ausência de malware.
 
-`npm run desktop` e o bundle executam a preparação automaticamente. Se as cópias locais já forem válidas, o SSD pode estar desconectado. Se faltarem ou estiverem alteradas, o script exige a variável configurada e a origem local válida, encerrando com erro caso não as encontre. `--source-dir` continua disponível para indicar diretamente o diretório dos binários, sem precisar de baseDir. Não há fallback para download.
+`pnpm run desktop` e o bundle executam a preparação automaticamente. Se as cópias locais já forem válidas, o SSD pode estar desconectado. Se faltarem ou estiverem alteradas, o script exige a variável configurada e a origem local válida, encerrando com erro caso não as encontre. `--source-dir` continua disponível para indicar diretamente o diretório dos binários, sem precisar de baseDir. Não há fallback para download.
 
 O Tauri incorpora os executáveis em `Contents/Resources/binaries/macos-arm64/`. O Rust usa caminhos internos do aplicativo; o `.app` pronto não requer SSD, PATH, Python, yt-dlp ou Homebrew. Os executáveis continuam ignorados pelo Git.
 

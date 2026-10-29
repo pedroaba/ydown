@@ -77,3 +77,8 @@ Desktop.ini
 *~
 __pycache__/
 *.py[cod]
+
+# Use pnpm-lock.yaml as the only JavaScript dependency lockfile
+/package-lock.json
+/npm-shrinkwrap.json
+/yarn.lock
