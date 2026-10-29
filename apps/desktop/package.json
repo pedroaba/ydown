@@ -1,0 +1,33 @@
+{
+  "name": "@ydown/desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "vite build",
+    "dev:ui": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "bundle": "tauri build",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.4",
+    "@ydown/contracts": "*",
+    "@ydown/core": "*",
+    "@ydown/design-tokens": "*",
+    "@ydown/hooks": "*",
+    "@ydown/state": "*",
+    "@ydown/ui-desktop": "*",
+    "@ydown/utils": "*",
+    "lucide-react": "^0.577.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.0",
+    "@tauri-apps/cli": "^2.12.4",
+    "@vitejs/plugin-react": "^6.0.0",
+    "tailwindcss": "^4.2.0",
+    "vite": "^8.3.5"
+  }
+}

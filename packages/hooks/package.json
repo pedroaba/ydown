@@ -1,0 +1,17 @@
+{
+  "name": "@ydown/hooks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ydown/core": "*",
+    "@ydown/state": "*",
+    "@ydown/contracts": "*"
+  },
+  "peerDependencies": {
+    "react": "19.3.0"
+  }
+}

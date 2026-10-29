@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "LOCAL",
+  "version": "0.1.0",
+  "identifier": "com.local.music",
+  "build": {
+    "beforeDevCommand": "npm run dev:ui",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "LOCAL",
+        "width": 1440,
+        "height": 940,
+        "minWidth": 1000,
+        "minHeight": 700,
+        "backgroundColor": "#090909"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src https://i.ytimg.com 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; media-src 'self' asset: http://asset.localhost blob:; connect-src ipc: http://ipc.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$APPDATA/audio/**"]
+      },
+      "devCsp": "default-src 'self'; img-src https://i.ytimg.com 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; media-src 'self' asset: http://asset.localhost blob:; connect-src ipc: http://ipc.localhost http://127.0.0.1:5173 ws://127.0.0.1:5173"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "shortDescription": "Sua biblioteca de m\u00fasica offline",
+    "category": "Music",
+    "resources": [
+      "binaries/macos-arm64/ffmpeg",
+      "binaries/macos-arm64/ffprobe",
+      "binaries/manifest.json",
+      "binaries/FFMPEG-LICENSE.txt",
+      "binaries/GPL-3.0.txt"
+    ]
+  }
+}

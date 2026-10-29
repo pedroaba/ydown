@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Ydown",
+    "slug": "ydown",
+    "scheme": "ydown",
+    "version": "1.0.0",
+    "userInterfaceStyle": "dark",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "ios": {
+      "bundleIdentifier": "app.ydown.mobile",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "app.ydown.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}

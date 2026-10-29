@@ -1,0 +1,26 @@
+[package]
+name = "local-music"
+version = "0.1.0"
+description = "LOCAL — Sua música, no seu ritmo"
+authors = ["LOCAL"]
+edition = "2021"
+
+[lib]
+name = "local_music_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.38", features = ["bundled"] }
+url = "2"
+
+rusty_ytdl = { git = "https://github.com/Mithronn/rusty_ytdl.git", rev = "b1c6eb7c83f0d6189f256ed5df50019a5803c734", default-features = false, features = ["rustls"] }
+tokio = { version = "1", features = ["fs", "io-util", "time", "macros", "process", "sync"] }
+
+# Keep the IDNA dependency compatible with Boa 0.21 / ICU 2.0.
+idna_adapter = "=1.2.1"

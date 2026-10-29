@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-window",
+  "description": "LOCAL desktop window with native audio import",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

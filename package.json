@@ -1,0 +1,31 @@
+{
+  "name": "ydown",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "desktop": "npm run dev -w @ydown/desktop",
+    "mobile": "npm run start -w @ydown/mobile",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "npm run build -w @ydown/desktop",
+    "check": "npm run typecheck && npm test && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "desktop:build": "npm run bundle -w @ydown/desktop",
+    "desktop:preview": "npm run dev:ui -w @ydown/desktop"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "prettier": "^3.9.10",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

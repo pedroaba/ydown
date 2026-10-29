@@ -1,0 +1,20 @@
+{
+  "version": "9.0.2",
+  "platform": "aarch64-apple-darwin",
+  "files": [
+    {
+      "name": "ffmpeg",
+      "url": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffmpeg.zip",
+      "archiveSha256": "c8ed4c4e6978a03c485edbfe4e0a5dc2380f8a30bba5150531b31b094492d924",
+      "binarySha256": "2e11c6f90993cdb79fff84d3f90044d28316b310e75b3e030cfc9a54f2c9d384",
+      "bytes": 66332880
+    },
+    {
+      "name": "ffprobe",
+      "url": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/ffprobe.zip",
+      "archiveSha256": "fcbe839537485eaee7a7a8bc5cbc0f90d53617e80943e8a5b2e31cb851197ea6",
+      "binarySha256": "2738aa46a7f9acbc8ab09a6715554c90f7de603171ac403726765685df6a0059",
+      "bytes": 66158064
+    }
+  ]
+}
