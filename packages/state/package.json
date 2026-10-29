@@ -9,5 +9,8 @@
   "dependencies": {
     "@ydown/core": "*",
     "@ydown/contracts": "*"
+  },
+  "scripts": {
+    "test": "vitest run tests"
   }
 }

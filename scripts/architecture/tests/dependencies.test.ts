@@ -1,5 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const packagesRoot = fileURLToPath(new URL('../../../packages/', import.meta.url));
 import { expect, it } from 'vitest';
 function files(path: string): string[] {
   return readdirSync(path, { withFileTypes: true }).flatMap((entry) =>
@@ -22,7 +24,7 @@ const allowed: Record<string, string[]> = {
 };
 it('mantém o grafo de pacotes acíclico e a UI sem serviços ou acesso nativo a dados', () => {
   for (const [pkg, dependencies] of Object.entries(allowed)) {
-    for (const path of files(`packages/${pkg}/src`)) {
+    for (const path of files(join(packagesRoot, pkg, 'src'))) {
       const source = readFileSync(path, 'utf8');
       const imports = [...source.matchAll(/(?:from\s+|import\s*)['"]([^'"]+)['"]/g)].map(
         (m) => m[1],

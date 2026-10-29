@@ -1,9 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { AudioAdapter, AudioEvent, LibraryRepository } from '@ydown/contracts';
-import { editPlaylist, queueIndex, selectTracks, toggleFavorite } from '@ydown/core';
 import { demoLibrary } from '@ydown/core/demo';
-import { createLibraryRepository, createMusicRuntime } from '@ydown/state';
-import { formatBytes, formatDuration, progressRatio } from '@ydown/utils';
+import { createMusicRuntime } from '../src/index';
 function fixture(repository?: LibraryRepository) {
   let emit: (event: AudioEvent) => void = () => {};
   const audio: AudioAdapter = {
@@ -23,46 +21,6 @@ function fixture(repository?: LibraryRepository) {
   const runtime = createMusicRuntime({ audio, library });
   return { runtime, audio, emit: (event: AudioEvent) => emit(event) };
 }
-describe('casos de uso independentes de plataforma', () => {
-  it('busca sem acento, ordena e filtra favoritas sem alterar a fonte', () => {
-    expect(selectTracks(demoLibrary, 'mare', 'title').map((t) => t.id)).toEqual(['mare']);
-    expect(selectTracks(demoLibrary, '', 'title', true).map((t) => t.id)).toEqual(['aurora']);
-    expect(selectTracks(demoLibrary, '', 'title').map((t) => t.id)).toEqual([
-      'aurora',
-      'mare',
-      'caminho',
-      'orbita',
-    ]);
-    expect(selectTracks(demoLibrary, '', 'title', false, 'pausa').map((t) => t.id)).toEqual([
-      'aurora',
-      'mare',
-    ]);
-    expect(demoLibrary.tracks[2].id).toBe('orbita');
-  });
-  it('favorita e desfavorita com validação de identidade', () => {
-    const next = toggleFavorite(demoLibrary, 'mare');
-    expect(next.favoriteIds).toContain('mare');
-    expect(toggleFavorite(next, 'mare').favoriteIds).not.toContain('mare');
-    expect(() => toggleFavorite(demoLibrary, 'missing')).toThrow('Faixa não encontrada');
-  });
-  it('adiciona sem duplicar e remove da playlist', () => {
-    expect(editPlaylist(demoLibrary, 'pausa', 'aurora', 'add').playlists[0].trackIds).toHaveLength(
-      2,
-    );
-    expect(editPlaylist(demoLibrary, 'pausa', 'orbita', 'add').playlists[0].trackIds).toContain(
-      'orbita',
-    );
-    expect(
-      editPlaylist(demoLibrary, 'pausa', 'aurora', 'remove').playlists[0].trackIds,
-    ).not.toContain('aurora');
-    expect(() => editPlaylist(demoLibrary, 'missing', 'aurora', 'add')).toThrow();
-  });
-  it('respeita limites da fila', () => {
-    expect(queueIndex(['aurora', 'mare'], 'aurora', -1)).toBeNull();
-    expect(queueIndex(['aurora', 'mare'], 'aurora', 1)).toBe('mare');
-    expect(queueIndex(['aurora', 'mare'], 'mare', 1)).toBeNull();
-  });
-});
 describe('runtime compartilhado', () => {
   it('isola progresso de todos os assinantes de biblioteca e metadados', async () => {
     const { runtime, emit } = fixture();
@@ -179,44 +137,6 @@ describe('runtime compartilhado', () => {
     expect(audio.dispose).toHaveBeenCalledOnce();
   });
 });
-describe('persistência e utilitários', () => {
-  it('restaura apenas IDs válidos e preserva as edições entre sessões', async () => {
-    let value: string | null = null;
-    const storage = {
-      getItem: async () => value,
-      setItem: async (_: string, next: string) => {
-        value = next;
-      },
-    };
-    const repo = createLibraryRepository(storage, demoLibrary);
-    await repo.save(toggleFavorite(demoLibrary, 'mare'));
-    expect((await createLibraryRepository(storage, demoLibrary).load()).favoriteIds).toContain(
-      'mare',
-    );
-    value = JSON.stringify({
-      version: 1,
-      favoriteIds: ['missing', 'aurora', 'aurora'],
-      playlists: [],
-    });
-    expect((await repo.load()).favoriteIds).toEqual(['aurora']);
-  });
-  it('não sobrescreve silenciosamente arquivos inválidos', async () => {
-    const repo = createLibraryRepository(
-      { getItem: async () => '{invalid', setItem: vi.fn() },
-      demoLibrary,
-    );
-    await expect(repo.load()).rejects.toThrow();
-  });
-  it('formata duração e tamanho e limita progresso inválido', () => {
-    expect(formatDuration(3661)).toBe('1:01:01');
-    expect(formatDuration(NaN)).toBe('0:00');
-    expect(formatBytes(1024)).toBe('1 KB');
-    expect(formatBytes(-1)).toBe('0 B');
-    expect(progressRatio(40, 0)).toBe(0);
-    expect(progressRatio(120, 100)).toBe(1);
-  });
-});
-
 describe('controles e biblioteca desktop', () => {
   it('restaura fila e posição sem reproduzir automaticamente', async () => {
     const { runtime, audio } = fixture();

@@ -10,14 +10,17 @@
     "desktop": "npm run dev -w @ydown/desktop",
     "mobile": "npm run start -w @ydown/mobile",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "npm run test:typescript && npm run test:media-tools",
     "build": "npm run build -w @ydown/desktop",
     "check": "npm run typecheck && npm test && npm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "desktop:build": "npm run bundle -w @ydown/desktop",
     "desktop:preview": "npm run dev:ui -w @ydown/desktop",
-    "media:prepare": "python3 scripts/fetch-media-tools.py"
+    "media:prepare": "python3 scripts/fetch-media-tools.py",
+    "test:typescript": "vitest run",
+    "test:media-tools": "python3 -m unittest discover -s scripts/tests -p 'test_*.py'",
+    "test:architecture": "vitest run scripts/architecture/tests"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

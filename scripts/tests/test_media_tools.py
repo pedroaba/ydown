@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-script = Path(__file__).resolve().parents[1] / 'scripts/fetch-media-tools.py'
+script = Path(__file__).resolve().parents[1] / 'fetch-media-tools.py'
 spec = importlib.util.spec_from_file_location('media_tools', script)
 media_tools = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(media_tools)

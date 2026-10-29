@@ -126,8 +126,12 @@ packages/
   ui-desktop/           # Componentes DOM/Radix
   ui-mobile/            # Componentes React Native
   utils/                # Utilitários compartilhados
-scripts/                # Preparação dos binários de mídia
-tests/                  # Testes de domínio e arquitetura
+scripts/
+  fetch-media-tools.py   # Preparação dos binários de mídia
+  tests/                # Testes Python da preparação
+  architecture/tests/   # Testes TypeScript das fronteiras entre pacotes
+
+# Os testes de cada pacote ficam em packages/<pacote>/tests/
 ```
 
 O mobile permanece separado e sem alterações nesta etapa. Seus adaptadores não usam os binários de desktop, e downloads não foram portados para Android/iOS.
@@ -149,7 +153,7 @@ Jobs incompletos são marcados como interrompidos ao reiniciar e podem ser tenta
 ```sh
 npm run check
 npm run format:check
-python3 -m unittest discover -s tests -p 'test_media_tools.py'
+npm run test:media-tools
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml --lib
 cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check
 ```
@@ -160,6 +164,18 @@ Há também uma prova de extração e download real, sem adicionar conteúdo à 
 cargo run --manifest-path apps/desktop/src-tauri/Cargo.toml \
   --example youtube_probe -- 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
 ```
+
+`npm test` executa as suítes TypeScript e Python. Para testar apenas um módulo:
+
+```sh
+npm test -w @ydown/core
+npm test -w @ydown/state
+npm test -w @ydown/utils
+npm run test:architecture
+npm run test:media-tools
+```
+
+Os testes de domínio ficam em `packages/core/tests`, os de runtime e persistência em `packages/state/tests`, e os de formatação em `packages/utils/tests`. A verificação do grafo entre pacotes pertence ao módulo de arquitetura em `scripts/architecture/tests`; a preparação Python tem sua própria suíte em `scripts/tests`.
 
 A validação da primeira versão incluiu **19 testes TypeScript**, **três testes Rust**, download real de M4A e MP4 e reprodução do vídeo local pelo aplicativo empacotado. Detalhes e limites estão em [docs/verification.md](docs/verification.md).
 

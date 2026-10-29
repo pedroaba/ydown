@@ -48,3 +48,9 @@ A preparação real substituiu os executáveis do projeto; uma segunda execuçã
 O manifesto passou a usar `schemaVersion: 3`, `localBuild.baseDir.env: LOCAL_MEDIA_BASE_DIR` e caminhos relativos. O diretório-base é configurado no ambiente ou em `.env.local` ignorado pelo Git, com precedência para o ambiente. `.env.example` documenta a variável sem fixar a máquina. A preparação continua funcionando sem a variável quando os binários copiados já são válidos.
 
 Oito testes Python cobrem cópia/verificação, integridade, arquivos ausentes, override direto, `.env.local` com caminho entre aspas, precedência do ambiente, erro sem configuração e bloqueio de caminhos fora do baseDir.
+
+## Testes organizados por módulo — 29/10/2026
+
+A pasta `tests/` da raiz foi removida. Os testes TypeScript foram distribuídos entre `packages/core/tests`, `packages/state/tests` e `packages/utils/tests`. A verificação transversal de arquitetura fica em `scripts/architecture/tests`. Os testes Python da preparação ficam em `scripts/tests`, junto ao módulo de scripts. Os testes Rust continuam dentro dos próprios módulos.
+
+A cobertura anterior foi preservada: 19 testes TypeScript em cinco arquivos e oito testes Python. `npm test` executa ambas as suítes; comandos por pacote e por ferramenta permitem verificações isoladas. A resolução dos caminhos na verificação de arquitetura é relativa ao arquivo, sem depender do diretório de execução.

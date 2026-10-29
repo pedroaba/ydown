@@ -19,8 +19,7 @@
     "apps/**/*.tsx",
     "packages/**/*.ts",
     "packages/**/*.tsx",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "scripts/**/*.ts"
   ],
   "exclude": ["node_modules", "apps/mobile/dist"]
 }
